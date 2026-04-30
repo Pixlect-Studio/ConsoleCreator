@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsoleCreator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .hidden-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 1000; justify-content: center; align-items: center; }
+        
+        /* NEWS TICKER ANIMATION */
+        #news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: #00d9ff; color: #000; padding: 5px; font-weight: bold; overflow: hidden; white-space: nowrap; z-index: 500; text-transform: uppercase; }
+        .ticker-text { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Quick Tab Styling */
+        .tab-btn.active { border-bottom: 2px solid #10b981; color: #10b981; }
+        .config-tab { padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="news-ticker">
+        <div class="ticker-text" id="ticker-content">WELCOME NEW TECH COMPANY... FANS ARE WAITING FOR YOUR FIRST RELEASE ... INDUSTRY TREND: PIXEL ART IS RISING ...</div>
+    </div>
+
+    <div id="lock-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#00d9ff; font-family:'Courier New', monospace;">
+        <h2 style="border: 2px solid #00d9ff; padding: 20px;">PIXLECT STUDIOS - SECURITY SEAL</h2>
+        <p>Please enter your unique Access Key to unlock the software:</p>
+        <input type="text" id="access-key" style="background:#000; border:1px solid #00d9ff; color:#00d9ff; padding:10px; margin:20px; text-align:center;">
+        <button onclick="checkKey()" style="border:1px solid #00d9ff; padding:10px 30px; background:transparent; color:#00d9ff; cursor:pointer;">VERIFY KEY</button>
+        <p id="lock-error" style="color:#ef4444; margin-top:10px;"></p>
+    </div>
+
+    <div id="main-layout">
+        <div id="inbox-panel">
+            <div id="trophy-case" style="border-bottom: 2px solid #f59e0b; margin-bottom: 20px; padding-bottom: 10px;">
+                <h3 style="color: #f59e0b;">🏆 AWARDS 🏆</h3>
+                <div id="awards-list" style="font-size: 0.7rem; color: #f59e0b;">No awards yet.</div>
+            </div>
+            
+            <div class="stat-box" style="background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 5px;">
+                <div class="stat">HYPE: <strong id="hype-display" style="color: #f59e0b;">LOW</strong></div>
+                <div class="stat">TREND: <strong id="trend-display" style="color: #10b981;">RETRO</strong></div>
+            </div>
+
+            <h3 style="margin-top: 20px;">GMAIL.EXE</h3>
+            <div id="notification-list"></div>
+        </div>
+
+        <div id="game-canvas">
+            <h1 id="display-company-name"> Studios</h1>
+            
+            <div class="stats-bar">
+                <div class="stat">FUNDS: <strong id="money-display" style="color:#10b981;">$0</strong></div>
+                <div class="stat">FANS: <strong id="fan-display" style="color:#00d9ff;">0</strong></div>
+                <div class="stat">DAY: <strong id="day-display">1</strong></div>
+            </div>
+
+            <div id="console-stage">
+                <img id="console-icon" src="NES.png" alt="Current Tech">
+                <h2 id="console-name">Mintendo NES</h2>
+                <p id="next-goal-text">Goal: 500 Fans for SNES</p>
+            </div>
+
+            <div class="action-section">
+                <button onclick="openWorkshop()" style="color: #10b981;">Open Workshop</button>
+                <button onclick="openGallery()" style="color: #00d9ff;">View Gallery</button>
+                <button onclick="nextDay()" style="color: #f59e0b;">Sleep (Next Day)</button>
+                <button onclick="openResearch()" style="color: #f59e0b;">Research Lab</button>
+                <button onclick="openSettings()" style="color: #94a3b8;">Settings</button>
+            </div>
+
+            <div id="unlock-area">
+                <button id="buy-btn" class="special-btn" style="display:none;" onclick="buyNextGen()">UPGRADE</button>
+            </div>
+            
+            <div class="Credits">
+                <p>Made by Aaraiz Adnan, 2026 | PIXLECT Studios | Beta 4.0 | DISTRIBUTION IS NOT ALLOWED</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="workshop-screen" class="hidden-screen">
+        <div class="menu-card">
+            <h2>DEVELOPMENT WORKSHOP</h2>
+            <div class="config-option">
+                <label>CHOOSE MODEL:</label>
+                <select id="model-select" onchange="updateWorkshopPreview()"></select>
+            </div>
+            <div class="slider-container">
+                <p>UNITS TO BUILD: <span id="unit-count">1</span></p>
+                <input type="range" id="unit-slider" min="1" max="1000" value="1" oninput="updateSlider()">
+                <p>BASE COST: <span id="total-cost-display" style="color:#ef4444;">$200</span></p>
+            </div>
+            <div class="preview-box" style="padding: 20px; border: 1px dashed #00d9ff; margin: 10px 0;">
+                <img id="workshop-preview-img" src="NES.png" style="height:60px; filter: drop-shadow(0 0 5px #00d9ff);">
+            </div>
+            <button onclick="startCodingOS()">START CODING OS</button>
+            <button onclick="closeWorkshop()" class="btn-secondary">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="coding-screen" class="hidden-screen">
+        <div class="menu-card coding-card">
+            <h2 id="coding-title">COMPILING CONSOLES'S OS...</h2>
+            <p>BONUS PROFIT: <span id="profit-bonus" style="color:#10b981;">$0</span></p>
+            <p>TIME: <span id="timer">15</span>s</p>
+            <textarea id="code-terminal" placeholder="Type as many lines as possible to boost hype..."></textarea>
+        </div>
+    </div>
+
+    <div id="config-screen" class="hidden-screen">
+        <div class="menu-card" style="width: 85%; max-width: 900px;">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="showTab('system-tab')">SYSTEM</button>
+                <button class="tab-btn" onclick="showTab('controller-tab')">CONTROLLER</button>
+                <button class="tab-btn" onclick="showTab('custom-tab')">CUSTOM</button>
+                <button class="tab-btn" onclick="showTab('adv-tab')">MARKET</button>
+            </div>
+            <hr>
+            
+            <div id="system-tab" class="config-tab">
+                <div class="config-option">
+                    <label>CPU:</label>
+                    <select id="conf-cpu">
+                        <option value="0">8-bit Standard</option>
+                        <option value="500">16-bit Fast (LOCKED)</option>
+                        <option value="2000">32-bit Ultra (LOCKED)</option>
+                    </select>
+                </div>
+                <div class="config-option">
+    <label>RAM:</label>
+    <select id="conf-ram">
+        <option value="0">256 KB Standard</option>
+        <option value="1024">1 MB RAM (LOCKED)</option>
+        <option value="4096">4 MB RAM (LOCKED)</option>
+    </select>
+</div>
+                <div class="config-option">
+                    <label>MEDIA DRIVE:</label>
+                    <select id="conf-media">
+                        <option value="0">Cartridge Slot</option>
+                        <option value="300">CD-ROM (LOCKED)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="controller-tab" class="config-tab" style="display:none;">
+                <h3>DESIGN TYPE</h3>
+                <div class="controller-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center;">
+                    <label><input type="radio" name="ctrl" value="classic" checked><br>🕹️<br>Classic</label>
+                    <label><input type="radio" name="ctrl" value="pro"><br>🎮<br>Pro (+$100)</label>
+                    <label><input type="radio" name="ctrl" value="handheld"><br>📱<br>Handheld</label>
+                </div>
+            </div>
+
+            <div id="custom-tab" class="config-tab" style="display:none;">
+                <div class="config-option"><label>SHELL COLOR:</label><input type="color" id="conf-color" value="#cccccc"></div>
+                <div class="config-option"><label>LED LIGHTING:</label><input type="checkbox" id="conf-led"> (+$50)</div>
+                <div class="config-option"><label>SECURITY SEAL:</label><input type="checkbox" id="conf-security"> (LOCKED)</div>
+            </div>
+
+            <div id="adv-tab" class="config-tab" style="display:none;">
+                <label>AD CAMPAIGN:</label>
+                <select id="conf-mkt">
+                    <option value="1">Word of Mouth (Free)</option>
+                    <option value="2">Radio Ads ($500)</option>
+                    <option value="5">TV Spot ($2000)</option>
+                    <option value="10">Super Bowl Ad ($10000)</option>
+                </select>
+            </div>
+
+            <button onclick="finalizeRelease()" style="background:#10b981; color:#fff; margin-top:20px; font-weight: bold; width: 100%;">RELEASE TO PUBLIC</button>
+        </div>
+    </div>
+
+    <div id="research-screen" class="hidden-screen">
+        <div class="menu-card" style="width: 80%; border-color: #f59e0b;">
+            <h2 style="color: #f59e0b;">R&D LABS & RESEARCH</h2>
+            <div class="research-grid" id="research-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
+            <button onclick="closeResearch()" style="margin-top:20px;">CLOSE LAB</button>
+        </div>
+    </div>
+
+    <div id="gallery-screen" class="hidden-screen">
+        <div class="menu-card" style="width: 80%;">
+            <h2>STUDIO ARCHIVES</h2>
+            <div id="gallery-list" class="gallery-grid" style="max-height: 400px; overflow-y: auto;"></div>
+            <button onclick="closeGallery()">CLOSE</button>
+        </div>
+    </div>
+
+    <div id="settings-screen" class="hidden-screen">
+        <div class="menu-card">
+            <h2>⚙️ SYSTEM CONFIG ⚙️</h2>
+            <button onclick="resetGame()" style="background:#ef4444; color:white; border:none; padding: 15px; margin: 10px 0; width: 100%;">WIPE ALL STUDIO DATA</button>
+            <button onclick="closeSettings()" style="width: 100%;">BACK</button>
+        </div>
+    </div>
+
+    <script src="Game.js"></script>
+    <script>
+        // Specific UI Toggles for Settings
+        function openSettings() { document.getElementById('settings-screen').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settings-screen').style.display = 'none'; }
+    </script>
+</body>
+</html>
