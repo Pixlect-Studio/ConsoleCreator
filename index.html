@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsoleCreator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .hidden-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 1000; justify-content: center; align-items: center; }
+
+        /* NEWS TICKER ANIMATION */
+        #news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: #00d9ff; color: #000; padding: 5px; font-weight: bold; overflow: hidden; white-space: nowrap; z-index: 500; text-transform: uppercase; }
+        .ticker-text { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Quick Tab Styling */
+        .tab-btn.active { border-bottom: 2px solid #10b981; color: #10b981; }
+        .config-tab { padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="news-ticker">
+        <div class="ticker-text" id="ticker-content">WELCOME NEW TECH COMPANY... FANS ARE WAITING FOR YOUR FIRST RELEASE ... INDUSTRY TREND: PIXEL ART IS RISING ...</div>
+    </div>
+
+    <!-- lock-screen removed: security key functionality deprecated -->
+
+    <div id="sleep-overlay">
+        <div class="stars"></div>
+        <div id="sleep-moon">🌙</div>
+        <h2 id="sleep-text">Zzz... Studio is resting...</h2>
+        <p id="sleep-day-label"></p>
+    </div>
+
+    <div id="main-layout">
+        <div id="inbox-panel">
+            <div class="panel-header">
+                <div id="trophy-case" style="border-bottom: 2px solid #f59e0b; margin-bottom: 20px; padding-bottom: 10px;">
+                <h3 style="color: #f59e0b;">🏆 AWARDS 🏆</h3>
+                <div id="awards-list" style="font-size: 0.7rem; color: #f59e0b;">No awards yet.</div>
+                </div>
+                <button class="panel-toggle" onclick="togglePanel('inbox-panel')">−</button>
+            </div>
+
+            <div class="stat-box" style="background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 5px;">
+                <div class="stat">HYPE: <strong id="hype-display" style="color: #f59e0b;">LOW</strong></div>
+                <div class="stat">TREND: <strong id="trend-display" style="color: #10b981;">RETRO</strong></div>
+            </div>
+
+            <h3 style="margin-top: 20px;">Your Inbox</h3>
+            <div id="notification-list"></div>
+
+            <h3 style="margin-top: 20px;">Achievements</h3>
+            <div id="achievements-list"></div>
+        </div>
+
+        <div id="game-canvas">
+            <h1 id="display-company-name"></h1>
+
+            <div class="stats-bar">
+                <div class="stat">FUNDS: <strong id="money-display" style="color:#10b981;">$0</strong></div>
+                <div class="stat">FANS: <strong id="fan-display" style="color:#00d9ff;">0</strong></div>
+                <div class="stat">DAY: <strong id="day-display">1</strong></div>
+            </div>
+
+            <div class="community-panel">
+                <div class="community-header">
+                    <span>🌐 COMMUNITY HUB</span>
+                    <button id="google-auth-btn" class="small-btn" onclick="toggleGoogleAuth()">SIGN IN WITH GOOGLE</button>
+                </div>
+                <div id="auth-status" class="auth-status">Sign in to appear on the leaderboard with your Google account.</div>
+                <div class="community-grid">
+                    <div class="community-card">
+                        <h4>LEADERBOARD</h4>
+                        <div id="leaderboard-list" class="leaderboard-list">Loading...</div>
+                    </div>
+                    <div class="community-card">
+                        <h4>STUDIO CHAT</h4>
+                        <div id="chat-feed" class="chat-feed"></div>
+                        <div class="chat-input-row">
+                            <input id="chat-input" type="text" maxlength="140" placeholder="Send a message to the studio chat..."><button id="chat-send-btn" onclick="sendChatMessage()">SEND</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="console-stage">
+                <img id="console-icon" src="NES.png" alt="Current Tech">
+                <h2 id="console-name">Mintendo NES</h2>
+                <p id="next-goal-text">Goal: 500 Fans for SNES</p>
+                <p id="stock-display" style="color:#94a3b8; font-size:0.85rem;">Stock: 0 units</p>
+
+
+            </div>
+
+            <div class="action-section">
+                <button onclick="openWorkshop()" style="color: #10b981;">Open Workshop</button>
+                <button onclick="openGallery()" style="color: #00d9ff;">View Gallery</button>
+                <button onclick="nextDay()" style="color: #f59e0b;">Sleep (Next Day)</button>
+                <button onclick="openResearch()" style="color: #f59e0b;">Research Lab</button>
+                <button onclick="openSettings()" style="color: #94a3b8;">Settings</button>
+            </div>
+
+            <div id="unlock-area">
+                <button id="buy-btn" class="special-btn" style="display:none;" onclick="buyNextGen()">UPGRADE</button>
+            </div>
+
+            <div class="Credits">
+                <p>Made by Aaraiz Adnan, 2026 | Copyright: PIXLECT Studios | Release 0.3 | DISTRIBUTION IS NOT ALLOWED</p>
+            </div>
+        </div>
+
+        <div id="repair-panel">
+            <div class="panel-header">
+                <h3 style="color: #ef4444; margin-top: 0;">🛠️ REPAIR BAY 🛠️</h3>
+                <button class="panel-toggle" onclick="togglePanel('repair-panel')">−</button>
+            </div>
+            <p style="font-size: 0.75rem; color: #94a3b8;">Damaged batches show up here from time to time. Repair them before they hurt your reputation.</p>
+            <div id="repair-list"></div>
+        </div>
+    </div>
+
+    <div id="workshop-screen" class="hidden-screen">
+        <div class="menu-card">
+            <h2>DEVELOPMENT WORKSHOP</h2>
+            <div class="config-option">
+                <label>CHOOSE MODEL:</label>
+                <select id="model-select" onchange="updateWorkshopPreview()"></select>
+            </div>
+            <div class="slider-container">
+                <p>UNITS TO BUILD: <span id="unit-count">1</span></p>
+                <input type="range" id="unit-slider" min="1" max="1000" value="1" oninput="updateSlider()">
+                <p>BASE COST: <span id="total-cost-display" style="color:#ef4444;">$20</span></p>
+            </div>
+            <div class="preview-box" style="padding: 20px; border: 1px dashed #00d9ff; margin: 10px 0;">
+                <img id="workshop-preview-img" src="NES.png" style="height:60px; filter: drop-shadow(0 0 5px #00d9ff);" alt="Workshop Preview">
+                <p id="workshop-stock-label" style="font-size:0.75rem; color:#94a3b8; margin-top:8px;">Current Stock: 0 units</p>
+            </div>
+            <button onclick="startCodingOS()">START CODING OS</button>
+            <button onclick="closeWorkshop()" class="btn-secondary">BACK</button>
+            <button onclick="finalizeWorkshopPurchase()" style="background:#10b981; color:#001a33; border-color:#10b981;">BILL</button>
+
+        </div>
+    </div>
+
+    <div id="coding-screen" class="hidden-screen">
+        <div class="menu-card coding-card">
+            <h2 id="coding-title">COMPILING CONSOLE'S OS...</h2>
+            <p>BONUS PROFIT: <span id="profit-bonus" style="color:#10b981;">$0</span></p>
+            <p>TIME: <span id="timer">15</span>s</p>
+            <textarea id="code-terminal" placeholder="Type as many lines as possible to boost hype..."></textarea>
+            <p id="paste-warning" style="color:#ef4444; font-size:0.75rem; height:16px; margin-top:6px;"></p>
+        </div>
+    </div>
+
+    <div id="config-screen" class="hidden-screen">
+        <div class="menu-card" style="width: 85%; max-width: 900px;">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="showTab('system-tab', event)">SYSTEM</button>
+                <button class="tab-btn" onclick="showTab('controller-tab', event)">CONTROLLER</button>
+                <button class="tab-btn" onclick="showTab('custom-tab', event)">CUSTOM</button>
+                <button class="tab-btn" onclick="showTab('adv-tab', event)">MARKET</button>
+            </div>
+            <hr>
+
+            <div id="system-tab" class="config-tab" style="display:block;">
+                <div class="config-option has-preview">
+                    <div class="select-wrapper">
+                        <label>CPU:</label>
+                        <select id="conf-cpu">
+                            <option value="0">8-bit Standard</option>
+                            <option value="500">16-bit Fast</option>
+                            <option value="2000">32-bit Ultra</option>
+                        </select>
+                    </div>
+                    <div class="config-image-preview">
+                        <img id="cpu-image" src="8-bit.png" alt="8-bit Standard Preview">
+                    </div>
+                </div>
+
+                <div class="config-option has-preview">
+                    <div class="select-wrapper">
+                        <label>RAM:</label>
+                        <select id="conf-ram">
+                            <option value="0">256-KB Standard</option>
+                            <option value="1024">1-MB Premium</option>
+                            <option value="4096">4-MB Elite</option>
+                            <option value="8192">8-MB Ultra</option>
+                            <option value="16384">16-MB Hyper</option>
+                        </select>
+                    </div>
+                    <div class="config-image-preview">
+                        <img id="ram-image" src="256-KB.png" alt="256-KB Standard Preview">
+                    </div>
+                </div>
+
+                <div class="config-option">
+                    <div class="select-wrapper">
+                        <label>MEDIA DRIVE:</label>
+                        <select id="conf-media">
+                            <option value="0">Cartridge Slot</option>
+                            <option value="300">CD-ROM (LOCKED)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="controller-tab" class="config-tab" style="display:none;">
+                <div class="config-option">
+                    <label>CONTROLLER STYLE:</label>
+                    <select id="conf-controller">
+                        <option value="Classic Controller">Classic Controller</option>
+                        <option value="Wireless Controller">Wireless Controller</option>
+                        <option value="Motion Controller">Motion Controller</option>
+                    </select>
+                </div>
+                <div class="config-option">
+                    <label>SECURITY SEAL:</label>
+                    <input type="checkbox" id="conf-security" disabled>
+                </div>
+            </div>
+
+            <div id="custom-tab" class="config-tab" style="display:none;">
+                <div class="config-option">
+                    <label>CONSOLE COLOR:</label>
+                    <input type="color" id="conf-color" value="#00d9ff">
+                </div>
+            </div>
+
+            <div id="adv-tab" class="config-tab" style="display:none;">
+                <div class="config-option">
+                    <label>MARKETING BUDGET:</label>
+                    <select id="conf-mkt">
+                        <option value="1">None (Free)</option>
+                        <option value="2">Small Campaign ($500)</option>
+                        <option value="5">Big Campaign ($2,000)</option>
+                        <option value="10">Massive Campaign ($10,000)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="finalizeRelease()" class="special-btn">RELEASE CONSOLE</button>
+        </div>
+    </div>
+
+    <div id="research-screen" class="hidden-screen">
+        <div class="menu-card" style="width: 80%; border-color: #f59e0b;">
+            <h2 style="color: #f59e0b;">TECHNO LABS & RESEARCH</h2>
+            <div class="research-grid" id="research-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
+            <button onclick="closeResearch()" style="margin-top:20px;">CLOSE LAB</button>
+        </div>
+    </div>
+
+    <div id="gallery-screen" class="hidden-screen">
+        <div class="menu-card" style="width: 80%;">
+            <h2>STUDIO ARCHIVES</h2>
+            <div id="gallery-list" class="gallery-grid" style="max-height: 400px; overflow-y: auto;"></div>
+            <button onclick="closeGallery()">CLOSE</button>
+        </div>
+    </div>
+
+    <div id="settings-screen" class="hidden-screen">
+        <div class="menu-card">
+            <h2>⚙️ SYSTEM CONFIG ⚙️</h2>
+            <button onclick="resetGame()" style="background:#ef4444; color:white; border:none; padding: 15px; margin: 10px 0; width: 100%;">WIPE ALL STUDIO DATA</button>
+            <button onclick="closeSettings()" style="width: 100%;">BACK</button>
+        </div>
+    </div>
+
+    <script src="Game.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9LPl448SZoyIkLZZ0czLeHpKH4jv5eS8",
+            authDomain: "consolecreator.firebaseapp.com",
+            projectId: "consolecreator",
+            storageBucket: "consolecreator.firebasestorage.app",
+            messagingSenderId: "566624007808",
+            appId: "1:566624007808:web:4babc84729a46aa19a9865",
+            measurementId: "G-C73HHJL9Q6",
+            databaseURL: "https://consolecreator-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        const database = getDatabase(app, firebaseConfig.databaseURL);
+
+        window.firebaseReady = true;
+        window.firebaseApp = app;
+        window.firebaseAnalytics = analytics;
+        window.firebaseAuth = auth;
+        window.firebaseGoogleProvider = provider;
+        window.firebaseDb = database;
+        window.firebaseHelpers = { ref, push, set, onValue, serverTimestamp };
+        window.firebaseAuthHelpers = { signInWithPopup, signOut, onAuthStateChanged };
+    </script>
+    <script>
+        // UI Toggles for the settings modal
+        function openSettings() { document.getElementById('settings-screen').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settings-screen').style.display = 'none'; }
+
+
+
+
+        // Live image preview swap for CPU / RAM selects in the config screen
+        document.addEventListener("DOMContentLoaded", function() {
+            const cpuSelect = document.getElementById('conf-cpu');
+            const cpuImage = document.getElementById('cpu-image');
+            if (cpuSelect && cpuImage) {
+                cpuSelect.addEventListener('change', function() {
+                    const selectedText = this.options[this.selectedIndex].text;
+                    const bitType = selectedText.split(' ')[0]; // "8-bit", "16-bit", etc.
+                    cpuImage.src = `${bitType}.png`;
+                    cpuImage.alt = `${selectedText} Preview`;
+                });
+            }
+
+            const ramSelect = document.getElementById('conf-ram');
+            const ramImage = document.getElementById('ram-image');
+            if (ramSelect && ramImage) {
+                ramSelect.addEventListener('change', function() {
+                    const selectedText = this.options[this.selectedIndex].text;
+                    const ramType = selectedText.split(' ')[0]; // "256-KB", "1-MB", etc.
+                    ramImage.src = `${ramType}.png`;
+                    ramImage.alt = `${selectedText} Preview`;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
